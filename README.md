@@ -62,6 +62,7 @@ The server initializes shared memory and waits for matrix input. The client send
 Enter matrix inputs followed by the desired operation (ADD, MUL, AND, OR). The program will perform the operations concurrently using threads.
 
 ## Input
+```
 Matrix input have to be in the following format:
 (rows,columns:value1,value2,...,valueN) 
 whereas N = rows * columns.
@@ -69,26 +70,31 @@ notes regarding the inputs:
 • The matrices must be squared (rows == columns).
 • No spacing at all.
 • For complex numbers - the imaginary part must have a prefix (i.e. if you want to enter a number+i, you have to write it as number+1i)
-
+```
 ## Output
 The output of the programs will display the results of the matrix operations. Error messages will provide information if any issues occur.
 
 ## Files
 - Base Code Folder
+```
             - MatricesCalculator.c: The base code containing the main matrix operations.
             - run_me_1.sh
             - CMake files
+```
 - Shared Memory Expansion Folder
+```
             - MatricesCalc_Server.c: Server code for shared memory implementation.
             - MatricesCalc_Client.c: Client code for shared memory implementation.
             - run_me_2a.sh
             - run_me_3a.sh
             - CMake files
+```
 - Threads Expansion Folder
+```
             - MatricesCalc_Threads.c: Code for implementing matrix operations using threads.
             - run_me_3.sh
             - CMake files
-
+```
 - README.txt: The text file you're currently reading.
 
 ## License
