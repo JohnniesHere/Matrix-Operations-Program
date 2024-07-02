@@ -75,19 +75,19 @@ The output of the programs will display the results of the matrix operations. Er
 
 ## Files
 - Base Code Folder
-		- MatricesCalculator.c: The base code containing the main matrix operations.
-		- run_me_1.sh
-		- CMake files
+            - MatricesCalculator.c: The base code containing the main matrix operations.
+            - run_me_1.sh
+            - CMake files
 - Shared Memory Expansion Folder
-		- MatricesCalc_Server.c: Server code for shared memory implementation.
-		- MatricesCalc_Client.c: Client code for shared memory implementation.
-		- run_me_2a.sh
-		- run_me_3a.sh
-		- CMake files
+            - MatricesCalc_Server.c: Server code for shared memory implementation.
+            - MatricesCalc_Client.c: Client code for shared memory implementation.
+            - run_me_2a.sh
+            - run_me_3a.sh
+            - CMake files
 - Threads Expansion Folder
-		- MatricesCalc_Threads.c: Code for implementing matrix operations using threads.
-		- run_me_3.sh
-		- CMake files
+            - MatricesCalc_Threads.c: Code for implementing matrix operations using threads.
+            - run_me_3.sh
+            - CMake files
 
 - README.txt: The text file you're currently reading.
 
