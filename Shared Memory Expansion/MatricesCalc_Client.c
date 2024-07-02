@@ -767,6 +767,7 @@ int main() {
                     } else if (strcmp(operation, "AND") == 0) {
                         if (!isBinaryMatrix(&matrix1) || !isBinaryMatrix(&matrix2)) {
                             printErrorMessage();
+                            free(copy);
                             error = 1;
                             continue;
                         }
@@ -776,6 +777,7 @@ int main() {
                     } else if (strcmp(operation, "OR") == 0) {
                         if (!isBinaryMatrix(&matrix1) || !isBinaryMatrix(&matrix2)) {
                             printErrorMessage();
+                            free(copy);
                             error = 1;
                             continue;
                         }
@@ -790,6 +792,7 @@ int main() {
                 } else if (strcmp(input, "TRANSPOSE") == 0) {
                     if (secondMatrixRead == 1) {
                         printErrorMessage();
+                        free(copy);
                         error = 1;
                         continue;
                     }
@@ -844,7 +847,7 @@ int main() {
 
     // Cleanup shared memory and semaphore
    // shmctl(shmid, IPC_RMID, NULL);
-   // sem_close(sem);
+   sem_close(sem);
    //sem_unlink("/sem");
 
     //printf("Test program finished.\n");
