@@ -1,7 +1,8 @@
 Authorize: Jonathan Elgarisi
 
 ## Matrix Operations Program
-This project involves a series of C programs designed for matrix operations. The base code handles fundamental matrix operations, while the other codes expand on this base using shared memory and threads to demonstrate different inter-process communication techniques.
+This project involves a series of C programs designed for matrix operations on Linux-Based machines.
+The base code handles fundamental matrix operations, while the other codes expand on this base using shared memory and threads to demonstrate different inter-process communication techniques.
 
 ## Features
 - Perform basic matrix operations: addition, subtraction, multiplication, transpose, and logical operations (AND, OR, NOT).
