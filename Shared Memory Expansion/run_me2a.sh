@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Compile the server code
-gcc -o server MatricesCalc_Server.c -lrt -Wall
+gcc -o server MatricesCalc_Server.c -lrt -Wall -lm
 
 # Check if compilation was successful
 if [ $? -eq 0 ]; then

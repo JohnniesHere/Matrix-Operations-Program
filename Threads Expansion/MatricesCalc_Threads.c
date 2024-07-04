@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <complex.h>
 #include <pthread.h>
+#include <math.h>
 
 #define MAX_INPUT_LENGTH 128
 #define MAX_MATRICES 100
@@ -25,6 +26,29 @@ typedef struct {
     int matrix_type;
 } ThreadArgs;
 
+// Function prototypes -------------------------------------------------------
+double roundToNearestHalf(double num);
+void readMatrix(char input[MAX_INPUT_LENGTH], Matrix *matrix);
+void printMatrix(Matrix *matrix);
+void addMatrices(Matrix *matrix1, Matrix *matrix2, Matrix *result, const int kindOfNum);
+void addMatricesComplex(Matrix *matrix1, Matrix *matrix2, Matrix *result);
+void mulMatrices(Matrix *matrix1, Matrix *matrix2, Matrix *result, const int kindOfNum);
+void mulMatricesComplex(Matrix *matrix1, Matrix *matrix2, Matrix *result);
+double complex parseComplex(const char *str);
+void andBinaryMatrix(Matrix *matrix1, Matrix *matrix2, Matrix *result);
+void orBinaryMatrix(Matrix *matrix1, Matrix *matrix2, Matrix *result);
+void printErrorMessage();
+int isMatrix(char input[MAX_INPUT_LENGTH]);
+int isBinaryMatrix(Matrix *matrix);
+void freeMatrix(Matrix *matrix);
+void* performOperation(void* args);
+
+
+// Function to round a number to the nearest .0
+double roundToNearestHalf(double num) {
+    return round(num * 2.0) / 2.0;
+}
+
 // Function to read a matrix from input ---------------------------------------
 void readMatrix(char input[MAX_INPUT_LENGTH], Matrix *matrix) {
     char *token;
@@ -42,13 +66,13 @@ void readMatrix(char input[MAX_INPUT_LENGTH], Matrix *matrix) {
     // Allocate memory for matrix rows
     matrix->data = malloc(rows * sizeof(char **));
     if (matrix->data == NULL) {
-        printf("Memory allocation failed\n");
+        perror("malloc");
         return;
     }
     for (int i = 0; i < rows; i++) {
         matrix->data[i] = malloc(cols * sizeof(char *));
         if (matrix->data[i] == NULL) {
-            printf("Memory allocation failed\n");
+            perror("malloc");
             // Free previously allocated memory to avoid leaks
             while (i > 0) {
                 free(matrix->data[--i]);
@@ -61,7 +85,7 @@ void readMatrix(char input[MAX_INPUT_LENGTH], Matrix *matrix) {
             if (token != NULL) {
                 matrix->data[i][j] = strdup(token);
                 if (matrix->data[i][j] == NULL) {
-                    printf("Memory allocation failed\n");
+                    perror("malloc");
                     // Free all allocated memory
                     for (int k = 0; k <= j; k++) {
                         free(matrix->data[i][k]);
@@ -78,7 +102,7 @@ void readMatrix(char input[MAX_INPUT_LENGTH], Matrix *matrix) {
             }
         }
     }
-    printf("Matrix read successfully\n");
+    //printf("Matrix read successfully\n");
     //print the matrix and its elements using for loop
 //    for (int i = 0; i < rows; i++) {
 //        for (int j = 0; j < cols; j++) {
@@ -140,14 +164,12 @@ void addMatrices(Matrix *matrix1, Matrix *matrix2, Matrix *result, const int kin
     } else if (kindOfNum == 2) {
         for (int i = 0; i < matrix1->rows; i++) {
             for (int j = 0; j < matrix1->cols; j++) {
-                double value1 = atof(matrix1->data[i][j]);
-                double value2 = atof(matrix2->data[i][j]);
+                double value1 = roundToNearestHalf(atof(matrix1->data[i][j]));
+                double value2 = roundToNearestHalf(atof(matrix2->data[i][j]));
                 double sum = value1 + value2;
-
-                // Calculate the length of the result string
-                int length = snprintf(NULL, 0, "%.1f", sum) + 1;
+                int length = snprintf(NULL, 0, "%.1f", roundToNearestHalf(sum)) + 1;
                 result->data[i][j] = malloc(length);
-                snprintf(result->data[i][j], length, "%.1f", sum);
+                snprintf(result->data[i][j], length, "%.1f", roundToNearestHalf(sum));
             }
         }
     }
@@ -193,10 +215,10 @@ void addMatricesComplex(Matrix *matrix1, Matrix *matrix2, Matrix *result) {
                 length = snprintf(NULL, 0, "%.0fi", imagSum) + 1;
                 result->data[i][j] = malloc(length);
                 snprintf(result->data[i][j], length, "%.0fi", imagSum);
-            } else if (imagSum == 0) {
-                length = snprintf(NULL, 0, "%.0f", realSum) + 1;
-                result->data[i][j] = malloc(length);
-                snprintf(result->data[i][j], length, "%.0f", realSum);
+//            } else if (imagSum == 0) {
+//                length = snprintf(NULL, 0, "%.0f", realSum) + 1;
+//                result->data[i][j] = malloc(length);
+//                snprintf(result->data[i][j], length, "%.0f", realSum);
             } else {
                 length = snprintf(NULL, 0, "%.0f%+.0fi", realSum, imagSum) + 1;
                 result->data[i][j] = malloc(length);
@@ -223,8 +245,8 @@ void mulMatrices(Matrix *matrix1, Matrix *matrix2, Matrix *result, const int kin
         for (int j = 0; j < result->cols; j++) {
             double sum = 0;
             for (int k = 0; k < matrix1->cols; k++) {
-                double value1 = atof(matrix1->data[i][k]);
-                double value2 = atof(matrix2->data[k][j]);
+                double value1 = roundToNearestHalf(atof(matrix1->data[i][k]));
+                double value2 = roundToNearestHalf(atof(matrix2->data[k][j]));
                 sum += value1 * value2;
             }
 
@@ -234,9 +256,9 @@ void mulMatrices(Matrix *matrix1, Matrix *matrix2, Matrix *result, const int kin
                 result->data[i][j] = malloc(length);
                 snprintf(result->data[i][j], length, "%d", (int)sum);
             } else {  // Floating point
-                length = snprintf(NULL, 0, "%.2f", sum) + 1;
+                length = snprintf(NULL, 0, "%.1f", sum) + 1;
                 result->data[i][j] = malloc(length);
-                snprintf(result->data[i][j], length, "%.2f", sum);
+                snprintf(result->data[i][j], length, "%.1f", sum);
             }
         }
     }
@@ -302,10 +324,10 @@ void mulMatricesComplex(Matrix *matrix1, Matrix *matrix2, Matrix *result) {
                 length = snprintf(NULL, 0, "%.0fi", cimag(sum)) + 1;
                 result->data[i][j] = malloc(length);
                 snprintf(result->data[i][j], length, "%.0fi", cimag(sum));
-            } else if (cimag(sum) == 0) {
-                length = snprintf(NULL, 0, "%.0f", creal(sum)) + 1;
-                result->data[i][j] = malloc(length);
-                snprintf(result->data[i][j], length, "%.0f", creal(sum));
+//            } else if (cimag(sum) == 0) {
+//                length = snprintf(NULL, 0, "%.0f", creal(sum)) + 1;
+//                result->data[i][j] = malloc(length);
+//                snprintf(result->data[i][j], length, "%.0f", creal(sum));
             } else {
                 length = snprintf(NULL, 0, "%.0f%+.0fi", creal(sum), cimag(sum)) + 1;
                 result->data[i][j] = malloc(length);
@@ -482,7 +504,7 @@ void* performOperation(void* args) {
 
     Matrix* result = malloc(sizeof(Matrix));
     if (result == NULL) {
-        printf("ERR: Memory allocation failed\n");
+        perror("malloc");
         return NULL;
     }
 
@@ -617,7 +639,7 @@ int main() {
     for (int i = 1; i < numThreads; i++) {
         Matrix* tempResult = malloc(sizeof(Matrix));
         if (tempResult == NULL) {
-            printf("ERR: Memory allocation failed\n");
+            perror("malloc");
             return 1;
         }
 

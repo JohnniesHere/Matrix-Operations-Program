@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Compile the client code
-gcc -o client MatricesCalc_Client.c -lrt -Wall
+gcc -o client MatricesCalc_Client.c -lrt -Wall -lm
 
 # Check if compilation was successful
 if [ $? -eq 0 ]; then

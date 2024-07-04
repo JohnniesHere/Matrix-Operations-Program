@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Compile the server code
-gcc -o matricesCalcThreads MatricesCalc_Threads.c -lrt -Wall
+gcc -o matricesCalcThreads MatricesCalc_Threads.c -lrt -Wall -lm
 
 # Check if compilation was successful
 if [ $? -eq 0 ]; then

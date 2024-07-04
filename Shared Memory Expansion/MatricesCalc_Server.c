@@ -5,17 +5,22 @@
 #include <sys/shm.h>
 #include <semaphore.h>
 #include <fcntl.h>
-#define SHM_KEY 1234
-#define MAX_INPUT_LENGTH 128
-#define SHM_SIZE 2048
+
+#define MAX_INPUT_LENGTH 130 // 128 characters + 1 for newline + 1 for null terminator
+#define SHM_SIZE 8192
 
 typedef struct {
     int numStrings;
-    char data[1][MAX_INPUT_LENGTH  ];  // Flexible array member for string data
+    char data[1][MAX_INPUT_LENGTH * 2 ];  // Flexible array member for string data
 } SharedMemory;
 
 int main() {
-    int shmid = shmget(SHM_KEY, SHM_SIZE, IPC_CREAT | 0666);
+    key_t key;
+    if ((key = ftok("/tmp", 'A')) == -1) {
+        perror("ftok() failed");
+        exit(EXIT_FAILURE);
+    }
+    int shmid = shmget(key, SHM_SIZE , IPC_CREAT| IPC_EXCL | 0666);
     if (shmid < 0) {
         perror("shmget");
         exit(1);
@@ -64,7 +69,7 @@ int main() {
     }
 
     // Cleanup shared memory and semaphore
-    // shmctl(shmid, IPC_RMID, NULL);
+     //shmctl(shmid, IPC_RMID, NULL);
     //sem_close(sem);
     //sem_unlink("/sem");
 
